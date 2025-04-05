@@ -45,8 +45,8 @@ export default function Home() {
       <div className="min-h-screen flex items-center justify-center gap-4 p-4 mx-auto">
         <Card className="w-full max-w-[300px] h-[80vh] flex flex-col m-4 ">
           <CardHeader>
-            <CardTitle>Alice in Climate Change Wonderland</CardTitle>
-            <CardDescription>Generate children stories about climate change in the style of Alice in Wonderland</CardDescription>
+            <CardTitle>Alice in Climateland</CardTitle>
+            <CardDescription>Generate children stories about climate change in the style of Alice in Wonderland.</CardDescription>
           </CardHeader>
             <CardContent className="relative flex-1 p-4 flex items-center justify-center">
               <div className="relative w-[90%] h-full rounded-lg overflow-hidden">
@@ -123,7 +123,7 @@ export default function Home() {
               Alice in Wonderland. <br></br><br></br>The stories are all about climate change, and serve as a great way to raise awareness
               early on in a child's life. <br></br><br></br> GPT-3.5 Turbo was fine-tuned in order to achieve a similar style every time.
               <br></br><br></br>Finally, the user's location data is shared with the model to make the stories more relevant to the child geographically.
-              <br></br><br></br>This project is Émilien Lavallée's submission for MariHacks 8.0
+              <br></br><br></br>This project is Émilien Lavallée's submission for MariHacks 8.0.
             </CardDescription>
           </CardHeader>
         </Card>
