@@ -1,0 +1,4 @@
+{
+    "template": "Given this hackathon idea and description, start the project by entering terminal commands to set up the project. If this is a web app, run npm commands to initialize the whole project. Prioritize NextJS. You may also write to files. Hack Idea: {idea}\n\n Current file path: {path}\n\n",
+    "inputVariables": ["idea", "path"]
+}

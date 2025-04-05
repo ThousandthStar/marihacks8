@@ -1,0 +1,4 @@
+{
+    "template": "Your task is to generate a list of features for a hackathon idea. MAX 5 FEATURES, MAKE SURE THEY ARE THE MOST RELEVANT.\n\n Here is the idea: {idea} \n\nHere is a description of the idea: {description}",
+    "inputVariables": ["idea", "description"]
+}

@@ -1,0 +1,6 @@
+[ { "from": "human", "value": " Rewrite this into Alice in Wonderland style: Alice was getting really bored sitting next to her sister by the riverbank, with nothing to do. She glanced at the book her sister was reading a couple of times, but it didn’t have any pictures or dialogue.
+“What’s the point of a book,” Alice thought, “if it doesn’t have pictures or conversations?”" }, { "from": "gpt", "value": "The capital of France is Paris." }, { "from": "human", "value": "What is the largest planet in our solar system?" }, { "from": "gpt", "value": "The largest planet in our solar system is Jupiter." }, { "from": "human", "value": "What is the boiling point of water?" }, { "from": "gpt", "value": "The boiling point of water is 100 degrees Celsius at sea level." }, { "from": "human", "value": "What is the speed of light?" }, { "from": "gpt", "value": "Alice was beginning to get very tired of sitting by her sister
+on the bank, and of having nothing to do:  once or twice she had
+peeped into the book her sister was reading, but it had no
+pictures or conversations in it, `and what is the use of a book,'
+thought Alice `without pictures or conversation?'" } ]

@@ -1,0 +1,4 @@
+{
+    "template": "Your task is to generate a list of pros and cons for a hackathon idea.MAX 3 PROS AND 3 CONS, MAKE SURE THEY ARE THE MOST RELEVANT. Here is the idea: {idea} \n\nHere is a description of the idea: {description}",
+    "inputVariables": ["idea", "description"]
+}

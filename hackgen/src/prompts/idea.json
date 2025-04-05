@@ -1,0 +1,4 @@
+{
+    "template": "Generate a killer app idea for a 24 hour hackathon, given the challenge. The idea must be innovative and creative. Make sure it is doable for a hackathon. Challenge prompt: {challenge}",
+    "inputVariables": ["challenge"]
+}

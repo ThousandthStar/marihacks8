@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="https://unpkg.com/@vscode/webview-ui-toolkit/dist/toolkit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <title>Hackathon Plan Wizard</title>
+    <style>
+        body {
+            padding: 1rem;
+            color: var(--vscode-editor-foreground);
+            background-color: var(--vscode-editor-background);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: none;
+            margin-bottom: 1rem;
+        }
+
+        .active {
+            display: block;
+        }
+
+        vscode-text-area {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        vscode-button {
+            margin-top: 1rem;
+        }
+
+        .details-container {
+            margin-top: 1rem;
+            border: 1px solid var(--vscode-input-border);
+            padding: 1rem;
+        }
+
+        .split-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .idea-panel {
+            margin-bottom: 2rem;
+            border: 1px solid var(--vscode-input-border);
+            padding: 1rem;
+        }
+
+        .idea-content {
+            padding: 1rem;
+        }
+
+        #ideas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            gap: 1rem;
+        }
+
+        .loading-container p {
+            color: var(--vscode-descriptionForeground);
+        }
+
+        vscode-progress-ring {
+            width: 32px;
+            height: 32px;
+        }
+
+        .idea-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            gap: 1rem;
+            border: 1px dashed var(--vscode-input-border);
+            margin: 1rem 0;
+        }
+
+        .idea-loading p {
+            color: var(--vscode-descriptionForeground);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section id="step1" class="step active">
+            <vscode-panel-tab><h2>HackGen</h2></vscode-panel-tab>
+            <div class="input-group">
+                <vscode-text-area
+                    id="problem"
+                    placeholder="Enter problem statement here"
+                    rows="5">
+                    Paste the challenge prompt here
+                </vscode-text-area>
+                <vscode-divider></vscode-divider>
+                <p>Or upload a PDF file:</p>
+                <vscode-button appearance="secondary" onclick="document.getElementById('pdfInput').click()">
+                    Choose PDF
+                </vscode-button>
+                <input 
+                    type="file" 
+                    id="pdfInput" 
+                    accept=".pdf" 
+                    style="display: none;"
+                    onchange="handlePdfUpload(event)"
+                />
+            </div>
+            <vscode-divider></vscode-divider>
+            <vscode-button appearance="primary" onclick="generatePlan()">Next</vscode-button>
+        </section>
+
+        <section id="loading" class="step">
+            <vscode-panel-tab id="loading-text">Generating your killer idea...</vscode-panel-tab>
+            <vscode-progress-ring></vscode-progress-ring>
+            <script>
+                const loadingMessages = [
+                    "Generating your killer app idea...",
+                    "Consulting with silicon-based life forms...",
+                    "Brewing coffee for the AI...", 
+                    "Mining creativity from the digital void...",
+                    "Teaching robots to dream...",
+                    "Searching parallel universes for inspiration...",
+                    "Converting caffeine into code...",
+                    "Downloading imagination.exe...",
+                    "Calculating the probability of success...",
+                    "Assembling digital building blocks...",
+                    "Quantum computing your next big thing...",
+                    "Thinking outside the binary box...",
+                    "Synthesizing innovation algorithms...",
+                    "Debugging the creative process...",
+                    "Optimizing breakthrough potential..."
+                ];
+                let messageIndex = 0;
+                setInterval(() => {
+                    messageIndex = (messageIndex + 1) % loadingMessages.length;
+                    document.getElementById('loading-text').textContent = loadingMessages[messageIndex];
+                }, 2000);
+            </script>
+        </section>
+
+        <section id="result" class="step">
+            <vscode-panel-tab>Generated Ideas</vscode-panel-tab>
+    
+            <div id="ideas-container">
+                <vscode-panels>
+                <!-- Template for each idea -->
+                <template id="idea-template">
+                    <div class="idea-panel">
+                        <vscode-panel-tab class="plan-name">Loading idea...</vscode-panel-tab>
+                        <vscode-panel-view>
+                            <div class="idea-content">
+                                <p class="plan-idea"></p>
+                                <p class="plan-description"></p>
+                                
+                                <vscode-panels>
+                                    <vscode-panel-tab>Features</vscode-panel-tab>
+                                    <vscode-panel-tab>Pros & Cons</vscode-panel-tab>
+                                    
+                                    <vscode-panel-view>
+                                        <div class="loading-container features-loading">
+                                            <vscode-progress-ring></vscode-progress-ring>
+                                            <p>Generating features...</p>
+                                        </div>
+                                        <ul class="plan-features" style="display: none;"></ul>
+                                    </vscode-panel-view>
+                                    
+                                    <vscode-panel-view>
+                                        <div class="loading-container analysis-loading">
+                                            <vscode-progress-ring></vscode-progress-ring>
+                                            <p>Analyzing pros and cons...</p>
+                                        </div>
+                                        <div class="split-container" style="display: none;">
+                                            <div>
+                                                <h4>Pros</h4>
+                                                <ul class="plan-pros"></ul>
+                                            </div>
+                                            <div>
+                                                <h4>Cons</h4>
+                                                <ul class="plan-cons"></ul>
+                                            </div>
+                                        </div>
+                                    </vscode-panel-view>
+                                </vscode-panels>
+                                <vscode-button appearance="primary" onclick="kickstartProject(this)">
+                                    Kickstart project
+                                </vscode-button>
+                            </div>
+                        </vscode-panel-view>
+                    </div>
+                </template>
+            </vscode-panels>
+                <template id="loading-template">
+                    <div class="idea-loading">
+                        <vscode-progress-ring></vscode-progress-ring>
+                        <p>Generating next idea...</p>
+                    </div>
+                </template>
+            </div>
+        </section>
+        <section id="kickstarting" class="step">
+            <vscode-panel-tab id="kickstarting-text"></vscode-panel-tab>
+            <vscode-progress-ring></vscode-progress-ring>
+            <script>
+                const loadingMessages2 = [
+                    "Unleashing the power of binary brilliance...",
+                    "Summoning innovative solutions...",
+                    "Processing creative wavelengths...",
+                    "Scanning the matrix for inspiration...",
+                    "Compiling breakthrough concepts...",
+                    "Decoding the future of technology...",
+                    "Initializing genius protocol...",
+                    "Extracting ideas from the cloud...",
+                    "Optimizing innovation parameters...",
+                    "Hacking the boundaries of possibility..."
+                ];
+
+                let messageIndex2 = 0;
+                const updateMessage = () => {
+                    messageIndex2 = (messageIndex2 + 1) % loadingMessages2.length;
+                    const element = document.getElementById('kickstarting-text');
+                    if (element) {
+                        element.textContent = loadingMessages2[messageIndex2];
+                    }
+                };
+
+                const messageInterval = setInterval(updateMessage, 2000);
+            </script>
+        </section>
+        <section id="success" class="step">
+            <vscode-panel-tab><h2>Success ✅</h2></vscode-panel-tab>
+            <div class="loading-container">
+                <p>You can close this tab now</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+
+        function startGenerating(prompt) {
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('loading').classList.add('active');
+            vscode.postMessage({
+                command: 'generate',
+                challenge: prompt
+            });
+        }
+
+        function generatePlan() {
+            const problem = document.getElementById('problem').value;
+            startGenerating(problem);
+        }
+
+        async function handlePdfUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                
+                // Get total number of pages
+                const numPages = pdf.numPages;
+                let fullText = '';
+
+                // Loop through all pages
+                for (let i = 1; i <= numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n\n'; // Add two newlines between pages
+                }
+                vscode.postMessage({
+                    command: 'alert',
+                    text: `PDF uploaded and parsed successfully! (${numPages} pages)`
+                });
+                startGenerating(fullText);
+            } catch (error) {
+                vscode.postMessage({
+                    command: 'alert',
+                    text: 'Error parsing PDF: ' + error.message
+                });
+            }
+        }
+
+        function updateIdeaContent(index, result, type) {
+            // Remove any existing loading indicator for this index
+            const existingLoading = document.getElementById(`loading-${index}`);
+            if (existingLoading) {
+                existingLoading.remove();
+            }
+
+            const container = document.getElementById(`idea-${index}`);
+            if (!container) {
+                const element = createIdeaElement(index);
+                document.getElementById('ideas-container').appendChild(element);
+                
+                // Add loading indicator for next idea if not the last one
+                if (index < 4) {
+                    const loadingTemplate = document.getElementById('loading-template');
+                    const loadingClone = loadingTemplate.content.cloneNode(true);
+                    const loadingElement = loadingClone.querySelector('.idea-loading');
+                    loadingElement.id = `loading-${index + 1}`;
+                    document.getElementById('ideas-container').appendChild(loadingClone);
+                }
+            }
+
+            const ideaElement = document.getElementById(`idea-${index}`);
+            
+            if (type === 'idea') {
+                ideaElement.querySelector('.plan-name').textContent = result.name;
+                ideaElement.querySelector('.plan-idea').textContent = result.idea;
+                //ideaElement.querySelector('.plan-description').textContent = result.description;
+            } else if (type === 'details') {
+                // Update features
+                const featuresLoading = ideaElement.querySelector('.features-loading');
+                const featuresList = ideaElement.querySelector('.plan-features');
+                if (result.features?.length) {
+                    featuresLoading.style.display = 'none';
+                    featuresList.style.display = 'block';
+                    featuresList.innerHTML = result.features.map(feature => `<li>${feature}</li>`).join('');
+                }
+                
+                // Update pros & cons
+                const analysisLoading = ideaElement.querySelector('.analysis-loading');
+                const analysisContent = ideaElement.querySelector('.split-container');
+                if (result.pros?.length && result.cons?.length) {
+                    analysisLoading.style.display = 'none';
+                    analysisContent.style.display = 'grid';
+                    ideaElement.querySelector('.plan-pros').innerHTML = 
+                        result.pros.map(pro => `<li>${pro}</li>`).join('');
+                    ideaElement.querySelector('.plan-cons').innerHTML = 
+                        result.cons.map(con => `<li>${con}</li>`).join('');
+                }
+            }
+        }
+
+        function createIdeaElement(index) {
+            const template = document.getElementById('idea-template');
+            const clone = template.content.cloneNode(true);
+            const container = clone.querySelector('.idea-panel');
+            container.id = `idea-${index}`;
+            return clone;
+        }
+
+        window.addEventListener('message', event => {
+            const message = event.data;
+        
+            if (message.command === 'idea') {
+                if (message.index === 0) {
+                    document.getElementById('loading').classList.remove('active');
+                    document.getElementById('result').classList.add('active');
+                }
+                updateIdeaContent(message.index, message.result, 'idea');
+            }
+            
+            if (message.command === 'details') {
+                updateIdeaContent(message.index, message.result, 'details');
+            }
+
+            if (message.command === 'success') {
+                document.getElementById('kickstarting').classList.remove('active');
+                document.getElementById('success').classList.add('active');
+                clearInterval(messageInterval);
+            }
+        });
+
+        function kickstartProject(button) {
+            const ideaPanel = button.closest('.idea-panel');
+            const idea = {
+                name: ideaPanel.querySelector('.plan-name').textContent,
+                idea: ideaPanel.querySelector('.plan-idea').textContent,
+                description: ideaPanel.querySelector('.plan-description').textContent,
+                features: Array.from(ideaPanel.querySelector('.plan-features').children).map(li => li.textContent),
+                pros: Array.from(ideaPanel.querySelector('.plan-pros').children).map(li => li.textContent),
+                cons: Array.from(ideaPanel.querySelector('.plan-cons').children).map(li => li.textContent)
+            };
+
+            vscode.postMessage({
+                command: 'kickstart',
+                idea: idea
+            });
+
+            document.getElementById('result').classList.remove('active');
+            document.getElementById('kickstarting').classList.add('active');
+            document.getElementById('kickstarting-text').textContent = `Kickstarting project: ${idea.name}`;
+        }
+    </script>
+</body>
+</html>
